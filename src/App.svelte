@@ -11,8 +11,11 @@
       },
     });
     const json = res.json();
+
     if (res.ok) {
       return json;
+    } else if (res.status === 404) {
+      throw new Error(`Kunne ikke finde nummerpladen: ${regNr.toUpperCase()}`);
     } else {
       throw new Error(json);
     }
@@ -30,9 +33,9 @@
   .field.has-addons {
     justify-content: center !important;
   }
-  /* .input {
+  .input {
     text-transform: uppercase;
-  } */
+  }
 </style>
 
 <section class="hero is-info">
@@ -64,7 +67,7 @@
 {#if vehiclePromise}
   {#await vehiclePromise}
     <section class="section">
-      <div class="container">
+      <div class="container has-text-centered">
         <progress class="progress is-small is-primary" max="100">15%</progress>
       </div>
     </section>
@@ -72,6 +75,12 @@
     <section class="section">
       <div class="container">
         <pre>{JSON.stringify(vehicle, 0, 2)}</pre>
+      </div>
+    </section>
+  {:catch error}
+    <section class="section">
+      <div class="container">
+        <div class="notification is-danger">{error.message}</div>
       </div>
     </section>
   {/await}
